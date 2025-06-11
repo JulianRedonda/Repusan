@@ -2,10 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Lista de Productos desde Excel</title>
+  <title>Distribuidora Repusan</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+
   <style>
+    body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #00c6ff, #0072ff);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     body {
       font-family: Arial, sans-serif;
       padding: 40px;
@@ -41,8 +56,8 @@
 </head>
 <body>
 
-<h1>Lista de Productos desde Excel</h1>
-
+<h1>Listado de Productos</h1>
+<p>En este listado encontrarás los productos que disponemos en stock.</p>
 
 <table id="tabla-productos" class="display nowrap">
   <thead>
@@ -55,6 +70,12 @@
   </thead>
   <tbody></tbody>
 </table>
+
+<p>Los precios son <strong>FINAL</strong></p>
+<a href="https://wa.me/5491122909259" target="_blank">
+  <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp" style="width:40px;height:40px;">
+  <span>Contactanos</span>
+</a>
 
 <!-- Librerías -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
