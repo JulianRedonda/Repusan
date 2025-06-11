@@ -105,7 +105,7 @@
           <td>${prod.Código || ''}</td>
           <td>${prod.Descripción || ''}</td>
           <td>$${prod.Precio || ''}</td>
-          <td><img src="${producto.Imagen}" class="zoomable" style="width: 50px; cursor: zoom-in;"></td>
+          <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" class="zoomable" style="width: 50px; cursor: zoom-in;"</td>
         `;
         tbody.appendChild(fila);
       });
