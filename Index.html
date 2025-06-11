@@ -3,32 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Distribuidora Repusan</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Estilos de DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-  <link rel="icon" type="image/png" href="favicon.png">
 
   <style>
     body {
       margin: 0;
       min-height: 100vh;
       background: linear-gradient(to bottom, #ffffff, #a1c4fd, #0072ff);
-      font-family: sans-serif;
-    }
-
-    body {
       font-family: Arial, sans-serif;
       padding: 40px;
-      background-color: #f9f9f9;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 30px;
-    }
-
-    input[type="file"] {
-      display: block;
-      margin: 20px auto;
     }
 
     table {
@@ -42,9 +34,36 @@
       border: 1px solid #ccc;
     }
 
-    img {
+    img.zoomable {
       width: 50px;
       height: auto;
+      cursor: zoom-in;
+    }
+
+    /* WhatsApp link */
+    a img {
+      vertical-align: middle;
+    }
+
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #modal-img {
+      max-width: 90%;
+      max-height: 90%;
+      box-shadow: 0 0 20px #fff;
+      border-radius: 8px;
+      transform: scale(1);
+      transition: transform 0.2s ease;
     }
   </style>
 </head>
@@ -71,30 +90,11 @@
   <span>Contactanos</span>
 </a>
 
-<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
-    <img id="modal-img" src="" style="max-width:90%; max-height:90%; box-shadow: 0 0 20px #fff;">
+<!-- Modal para imagen -->
+<div id="modal">
+  <img id="modal-img" src="">
 </div>
-<div id="modal" style="
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-">
-  <img id="modal-img" src="" style="
-    max-width: 90%;
-    max-height: 90%;
-    box-shadow: 0 0 20px #fff;
-    border-radius: 8px;
-    transform: scale(1);
-    transition: transform 0.2s ease;
-  ">
-</div>
-  
+
 <!-- Librerías -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -106,102 +106,89 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+<!-- Lógica -->
 <script>
-    let dataTable;
-  
-    fetch('stock.xlsx')
-      .then(res => res.arrayBuffer())
-      .then(data => {
+  let dataTable;
+
+  fetch('stock.xlsx')
+    .then(res => res.arrayBuffer())
+    .then(data => {
       const workbook = XLSX.read(data, { type: 'array' });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const productos = XLSX.utils.sheet_to_json(sheet);
       llenarTabla(productos);
-      })
-      .catch(error => console.error('Error leyendo el Excel:', error));
+    })
+    .catch(error => console.error('Error leyendo el Excel:', error));
 
-    function llenarTabla(productos) {
-      const tbody = document.querySelector("#tabla-productos tbody");
-      tbody.innerHTML = "";
-  
-      productos.forEach(prod => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${prod.Código || ''}</td>
-          <td>${prod.Descripción || ''}</td>
-          <td>$${prod.Precio || ''}</td>
-          <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" class="zoomable" style="width: 50px; cursor: zoom-in;"</td>
-        `;
-        tbody.appendChild(fila);
-      });
-  
-      if (dataTable) dataTable.destroy();
-  
-      dataTable = $('#tabla-productos').DataTable({
-        pageLength: 25,
-        lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-        dom: 'Bfrtip',
-        buttons: ['excelHtml5', 'pdfHtml5'],
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
-      });
-    }
-  </script>
-  <script>
+  function llenarTabla(productos) {
+    const tbody = document.querySelector("#tabla-productos tbody");
+    tbody.innerHTML = "";
+
+    productos.forEach(prod => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${prod.Código || ''}</td>
+        <td>${prod.Descripción || ''}</td>
+        <td>$${prod.Precio || ''}</td>
+        <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" class="zoomable"></td>
+      `;
+      tbody.appendChild(fila);
+    });
+
+    if (dataTable) dataTable.destroy();
+
+    dataTable = $('#tabla-productos').DataTable({
+      pageLength: 25,
+      lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
+      dom: 'Bfrtip',
+      buttons: ['excelHtml5', 'pdfHtml5'],
+      language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+    });
+  }
+</script>
+
+<script>
   document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("modal");
     const modalImg = document.getElementById("modal-img");
+    let zoom = 1;
 
-  document.body.addEventListener("click", function (e) {
-     if (e.target.tagName === "IMG" && e.target.classList.contains("zoomable")) {
-       modalImg.src = e.target.src;
-       modal.style.display = "flex";
-     } else if (e.target === modal || e.target === modalImg) {
-       modal.style.display = "none";
-     }
-   });
-  });
-  </script>
-  <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const modal = document.getElementById("modal");
-  const modalImg = document.getElementById("modal-img");
-  let zoom = 1;
+    // Abrir modal
+    document.body.addEventListener("click", function (e) {
+      if (e.target.tagName === "IMG" && e.target.classList.contains("zoomable")) {
+        modalImg.src = e.target.src;
+        zoom = 1;
+        modalImg.style.transform = `scale(${zoom})`;
+        modal.style.display = "flex";
+      }
+    });
 
-  // Abrir imagen en modal
-  document.body.addEventListener("click", function (e) {
-    if (e.target.tagName === "IMG" && e.target.classList.contains("zoomable")) {
-      modalImg.src = e.target.src;
-      zoom = 1;
+    // Cerrar al hacer clic afuera o sobre la imagen
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal || e.target === modalImg) {
+        modal.style.display = "none";
+      }
+    });
+
+    // Cerrar con tecla ESC
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        modal.style.display = "none";
+      }
+    });
+
+    // Zoom con scroll
+    modal.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        zoom += 0.1;
+      } else {
+        zoom = Math.max(0.5, zoom - 0.1);
+      }
       modalImg.style.transform = `scale(${zoom})`;
-      modal.style.display = "flex";
-    }
+    }, { passive: false });
   });
-
-  // Cerrar modal al hacer clic fuera de la imagen
-  modal.addEventListener("click", function (e) {
-    if (e.target === modal || e.target === modalImg) {
-      modal.style.display = "none";
-    }
-  });
-
-  // Cerrar con Esc
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-      modal.style.display = "none";
-    }
-  });
-
-  // Zoom con scroll
-  modal.addEventListener("wheel", function (e) {
-    e.preventDefault();
-    if (e.deltaY < 0) {
-      zoom += 0.1;
-    } else {
-      zoom = Math.max(0.5, zoom - 0.1); // no menos de 0.5
-    }
-    modalImg.style.transform = `scale(${zoom})`;
-  }, { passive: false });
-});
 </script>
+
 </body>
 </html>
-
