@@ -33,6 +33,11 @@
       padding: 10px;
       border: 1px solid #ccc;
     }
+  
+    #tabla-productos td:nth-child(3),
+    #tabla-productos th:nth-child(3) {
+      text-align: center;
+    }
 
     img.zoomable {
       width: 50px;
@@ -74,126 +79,139 @@
 </head>
 <body>
 
-<h1>Listado de Productos</h1>
-<p>En este listado encontrarás los productos que disponemos en stock.</p>
+  <h1>Distribuidora Repusan</h1>
+  <h1>Lista de Productos</h1>
+  <p>En este listado encontrarás los productos que disponemos en stock.</p>
 
-<table id="tabla-productos" class="display nowrap">
-  <thead>
-    <tr>
-      <th>Código</th>
-      <th>Descripción</th>
-      <th>Precio</th>
-      <th>Imagen</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+  <table id="tabla-productos" class="display nowrap">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Imagen</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<p>Los precios son <strong>FINAL</strong></p>
-<a href="https://wa.me/5491122909259" target="_blank">
-  <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp" style="width:40px;height:40px;">
-  <span>Contactanos</span>
-</a>
+  <p>Los precios son <strong>FINAL</strong></p>
+  <a href="https://wa.me/5491122909259" target="_blank">
+    <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp" style="width:40px;height:40px;">
+    <span>Contactanos</span>
+  </a>
 
-<!-- Modal para imagen -->
-<div id="modal">
-  <img id="modal-img" src="">
-</div>
+  <!-- Modal para imagen -->
+  <div id="modal">
+    <img id="modal-img" src="">
+  </div>
 
-<!-- Librerías -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Librerías -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<!-- Lógica -->
-<script>
-  let dataTable;
+  <!-- Lógica -->
+  <script>
+    let dataTable;
 
-  fetch('stock.xlsx')
-    .then(res => res.arrayBuffer())
-    .then(data => {
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const productos = XLSX.utils.sheet_to_json(sheet);
-      llenarTabla(productos);
-    })
-    .catch(error => console.error('Error leyendo el Excel:', error));
+    fetch('stock.xlsx')
+      .then(res => res.arrayBuffer())
+      .then(data => {
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const productos = XLSX.utils.sheet_to_json(sheet);
+        llenarTabla(productos);
+      })
+      .catch(error => console.error('Error leyendo el Excel:', error));
 
-  function llenarTabla(productos) {
-    const tbody = document.querySelector("#tabla-productos tbody");
-    tbody.innerHTML = "";
+    function llenarTabla(productos) {
+      const tbody = document.querySelector("#tabla-productos tbody");
+      tbody.innerHTML = "";
 
-    productos.forEach(prod => {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${prod.Código || ''}</td>
-        <td>${prod.Descripción || ''}</td>
-        <td>$${prod.Precio || ''}</td>
-        <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" class="zoomable"></td>
-      `;
-      tbody.appendChild(fila);
-    });
+      productos.forEach(prod => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${prod.Código || ''}</td>
+          <td>${prod.Descripción || ''}</td>
+          <td>$${prod.Precio || ''}</td>
+          <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" class="zoomable"></td>
+        `;
+        tbody.appendChild(fila);
+      });
 
-    if (dataTable) dataTable.destroy();
+      if (dataTable) dataTable.destroy();
 
-    dataTable = $('#tabla-productos').DataTable({
-      pageLength: 25,
-      lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-      dom: 'Bfrtip',
-      buttons: ['excelHtml5', 'pdfHtml5'],
-      language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
-    });
-  }
-</script>
+      dataTable = $('#tabla-productos').DataTable({
+        pageLength: 25,
+        lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
+        dom: 'Bfrtip',
+        buttons: [
+        {
+          extend: 'excelHtml5',
+          exportOptions: {
+            columns: [0, 1, 2] // Exporta solo las columnas Código, Descripción, Precio
+          }
+        },
+        {
+          extend: 'pdfHtml5',
+          exportOptions: {
+            columns: [0, 1, 2] // No incluye la columna Imagen (índice 3)
+          }
+        }
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+      });
+    }
+  </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const modal = document.getElementById("modal");
-    const modalImg = document.getElementById("modal-img");
-    let zoom = 1;
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const modal = document.getElementById("modal");
+      const modalImg = document.getElementById("modal-img");
+      let zoom = 1;
 
-    // Abrir modal
-    document.body.addEventListener("click", function (e) {
-      if (e.target.tagName === "IMG" && e.target.classList.contains("zoomable")) {
-        modalImg.src = e.target.src;
-        zoom = 1;
+      // Abrir modal
+      document.body.addEventListener("click", function (e) {
+        if (e.target.tagName === "IMG" && e.target.classList.contains("zoomable")) {
+          modalImg.src = e.target.src;
+          zoom = 1;
+          modalImg.style.transform = `scale(${zoom})`;
+          modal.style.display = "flex";
+        }
+      });
+
+      // Cerrar al hacer clic afuera o sobre la imagen
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal || e.target === modalImg) {
+          modal.style.display = "none";
+        }
+      });
+
+      // Cerrar con tecla ESC
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          modal.style.display = "none";
+        }
+      });
+
+      // Zoom con scroll
+      modal.addEventListener("wheel", function (e) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          zoom += 0.1;
+        } else {
+          zoom = Math.max(0.5, zoom - 0.1);
+        }
         modalImg.style.transform = `scale(${zoom})`;
-        modal.style.display = "flex";
-      }
+      }, { passive: false });
     });
-
-    // Cerrar al hacer clic afuera o sobre la imagen
-    modal.addEventListener("click", function (e) {
-      if (e.target === modal || e.target === modalImg) {
-        modal.style.display = "none";
-      }
-    });
-
-    // Cerrar con tecla ESC
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        modal.style.display = "none";
-      }
-    });
-
-    // Zoom con scroll
-    modal.addEventListener("wheel", function (e) {
-      e.preventDefault();
-      if (e.deltaY < 0) {
-        zoom += 0.1;
-      } else {
-        zoom = Math.max(0.5, zoom - 0.1);
-      }
-      modalImg.style.transform = `scale(${zoom})`;
-    }, { passive: false });
-  });
-</script>
+  </script>
 
 </body>
 </html>
