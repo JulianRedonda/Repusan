@@ -140,7 +140,7 @@
         fila.innerHTML = `
           <td>${prod.Código || ''}</td>
           <td>${prod.Descripción || ''}</td>
-          <td>$${prod.Precio || ''}</td>
+          <td>$${prod.Precio ? Number(prod.Precio).toFixed(2) : ''}</td>
           <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" class="zoomable"></td>
         `;
         tbody.appendChild(fila);
