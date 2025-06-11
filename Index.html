@@ -105,7 +105,7 @@
           <td>${prod.Código || ''}</td>
           <td>${prod.Descripción || ''}</td>
           <td>$${prod.Precio || ''}</td>
-          <td><img src="${prod.Imagen || 'https://via.placeholder.com/60'}" alt="img"></td>
+          <td><img src="${producto.Imagen}" class="zoomable" style="width: 50px; cursor: zoom-in;"></td>
         `;
         tbody.appendChild(fila);
       });
@@ -121,6 +121,25 @@
       });
     }
   </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("modal");
+    const modalImg = document.getElementById("modal-img");
+
+  document.body.addEventListener("click", function (e) {
+     if (e.target.tagName === "IMG" && e.target.classList.contains("zoomable")) {
+       modalImg.src = e.target.src;
+       modal.style.display = "flex";
+     } else if (e.target === modal || e.target === modalImg) {
+       modal.style.display = "none";
+     }
+   });
+  });
+  </script>
+
+  <div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <img id="modal-img" src="" style="max-width:90%; max-height:90%; box-shadow: 0 0 20px #fff;">
+  </div>
   
 </body>
 </html>
