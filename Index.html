@@ -8,7 +8,8 @@
   <!-- Estilos de DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -33,10 +34,18 @@
       padding: 10px;
       border: 1px solid #ccc;
     }
-  
-    #tabla-productos td:nth-child(3),
-    #tabla-productos th:nth-child(3) {
+
+    #tabla-productos td:nth-child(3){
+      text-align: left;
+    }
+
+    #tabla-productos td,
+    #tabla-productos th{
       text-align: center;
+    }
+
+    #tabla-productos {
+      font-family: 'Lucida Bright', monospace;
     }
 
     img.zoomable {
@@ -75,6 +84,85 @@
       transform: scale(1);
       transition: transform 0.2s ease;
     }
+    .contenedor-tabla .dt-buttons {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px; /* opcional, espacio debajo */
+      gap: 10px; /* opcional, espacio entre botones */
+    }
+    .top-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .top-container .left {
+      flex: 1;
+      text-align: left;
+    }
+
+    .top-container .center {
+      flex: 1;
+      text-align: center;
+    }
+
+    .top-container .right {
+      flex: 1;
+      text-align: right;
+    }
+
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Contenedor personalizado de la barra superior */
+    .dataTables_wrapper .dt-top-custom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1em;
+    }
+
+    /* Alineaciones específicas */
+    .dataTables_wrapper .dataTables_filter {
+      order: 1;
+      flex: 1;
+      justify-content: flex-start;
+      display: flex;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+      order: 3;
+      flex: 1;
+      justify-content: flex-end;
+      display: flex;
+    }
+
+    .dataTables_wrapper .dt-buttons {
+      order: 2;
+      flex: 1;
+      justify-content: center;
+      display: flex;
+    }
+
+    .dataTables_filter input {
+        background-color: white !important;
+        color: black;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 4px;
+    }
+    .dataTables_length select {
+      background-color: white !important;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 5px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -82,19 +170,20 @@
   <h1>Distribuidora Repusan</h1>
   <h1>Lista de Productos</h1>
   <p>En este listado encontrarás los productos que disponemos en stock.</p>
-
-  <table id="tabla-productos" class="display nowrap">
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>Descripción</th>
-        <th>Precio</th>
-        <th>Imagen</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
+  <div class="contenedor-tabla">
+    <table id="tabla-productos" class="display nowrap">
+      <thead>
+        <tr>
+          <th>Marca</th>
+          <th>Código</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Imagen</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
   <p>Los precios son <strong>FINAL</strong></p>
   <a href="https://wa.me/5491122909259" target="_blank">
     <img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp" style="width:40px;height:40px;">
@@ -138,6 +227,7 @@
       productos.forEach(prod => {
         const fila = document.createElement("tr");
         fila.innerHTML = `
+          <td>${prod.Marca || ''}</td>
           <td>${prod.Código || ''}</td>
           <td>${prod.Descripción || ''}</td>
           <td>$${prod.Precio ? Number(prod.Precio).toFixed(2) : ''}</td>
@@ -149,24 +239,37 @@
       if (dataTable) dataTable.destroy();
 
       dataTable = $('#tabla-productos').DataTable({
-        pageLength: 25,
-        lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-        dom: 'Bfrtip',
+        pageLength: 10,
+        lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "Todos"] ],
+        dom: '<"dt-top-custom"lfB>rtip',
         buttons: [
           {
             extend: 'excelHtml5',
+            text: '<i class="fas fa-file-excel" style="color:green;"></i> Exportar a Excel',
+            className: 'btn-excel',
             exportOptions: {
-              columns: [0, 1, 2] // Exporta solo las columnas Código, Descripción, Precio
+              columns: [0, 1, 2, 3] // Exporta solo las columnas Código, Descripción, Marca, Precio
             }
           },
           {
             extend: 'pdfHtml5',
+             text: `<i class="fa-duotone fa-solid fa-file-pdf" style="color:red;"></i>
+              Exportar a PDF`,
+            className: 'btn-pdf',
             exportOptions: {
-              columns: [0, 1, 2] // No incluye la columna Imagen (índice 3)
+              columns: [0, 1, 2, 3]
             }
           }
         ],
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+        language: { 
+          lengthMenu: "Ver _MENU_ productos por página",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ productos",
+          search: "Buscar:",
+          paginate: {
+            next: "Siguiente",
+            previous: "Anterior"
+          } 
+        }
       });
     }
   </script>
@@ -213,6 +316,5 @@
       }, { passive: false });
     });
   </script>
-
 </body>
 </html>
